@@ -44,11 +44,13 @@ document.querySelectorAll('.preview-media img').forEach(img=>{
 
     // Close on click or ESC
     light.addEventListener('click', ()=>document.body.removeChild(light));
-    window.addEventListener('keydown', e=>{
-      if(e.key === 'Escape' && document.body.contains(light)) {
+    const escHandler = e=>{
+      if(e.key === 'Escape' && document.body.contains(light)){
         document.body.removeChild(light);
+        window.removeEventListener('keydown', escHandler);
       }
-    });
+    };
+    window.addEventListener('keydown', escHandler);
 
     light.appendChild(big);
     document.body.appendChild(light);
@@ -82,12 +84,44 @@ document.querySelectorAll('.preview-media img').forEach(img=>{
   });
 })();
 
-// Contact form: send via Web3Forms and get email notification
+// Contact form: send via Web3Forms and show custom toast
 (function(){
   const form = document.getElementById('form');
   if (!form) return; // no form on this page
 
   const submitBtn = form.querySelector('button[type="submit"]');
+
+  function showFormToast(type, message){
+    const toast = document.getElementById('formToast');
+    if (!toast) {
+      // Fallback if HTML not present
+      alert(message);
+      return;
+    }
+
+    const textEl = toast.querySelector('.form-toast-text');
+    if (textEl) textEl.textContent = message;
+
+    // reset classes
+    toast.classList.remove('success', 'error', 'show');
+    toast.hidden = false;
+
+    // type = "success" | "error"
+    toast.classList.add(type);
+
+    // trigger animation
+    requestAnimationFrame(() => {
+      toast.classList.add('show');
+    });
+
+    // hide after delay
+    setTimeout(() => {
+      toast.classList.remove('show');
+      setTimeout(() => {
+        toast.hidden = true;
+      }, 250);
+    }, 2600);
+  }
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -112,17 +146,17 @@ document.querySelectorAll('.preview-media img').forEach(img=>{
       const data = await response.json();
 
       if (response.ok) {
-        alert("Success! Your message has been sent.");
+        showFormToast("success", "Message sent successfully. I will get back to you soon.");
         form.reset();
       } else {
-        alert("Error: " + (data.message || "Unable to send. Please try again."));
+        showFormToast("error", data.message || "Unable to send your message. Please try again.");
       }
 
     } catch (error) {
-      alert("Something went wrong. Please try again.");
+      showFormToast("error", "Network error. Please check your connection and try again.");
     } finally {
       if (submitBtn) {
-        submitBtn.textContent = originalText || "Send";
+        submitBtn.textContent = originalText || "Send Message";
         submitBtn.disabled = false;
       }
     }
