@@ -1,5 +1,5 @@
 /* ==========================================================
-   Portfolio JS — Smooth scroll, lightbox, and interactive contact
+   Portfolio JS — Smooth scroll, lightbox, contact tools & form submit
    Author: Venkata Sai Srikar Kuchi
    ========================================================== */
 
@@ -45,7 +45,9 @@ document.querySelectorAll('.preview-media img').forEach(img=>{
     // Close on click or ESC
     light.addEventListener('click', ()=>document.body.removeChild(light));
     window.addEventListener('keydown', e=>{
-      if(e.key === 'Escape' && document.body.contains(light)) document.body.removeChild(light);
+      if(e.key === 'Escape' && document.body.contains(light)) {
+        document.body.removeChild(light);
+      }
     });
 
     light.appendChild(big);
@@ -77,5 +79,52 @@ document.querySelectorAll('.preview-media img').forEach(img=>{
         ], {duration:500, easing:'ease'});
       });
     });
+  });
+})();
+
+// Contact form: send via Web3Forms and get email notification
+(function(){
+  const form = document.getElementById('form');
+  if (!form) return; // no form on this page
+
+  const submitBtn = form.querySelector('button[type="submit"]');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(form);
+    // Your Web3Forms access key
+    formData.append("access_key", "20d79819-1882-4c17-96ec-051372891390");
+
+    const originalText = submitBtn ? submitBtn.textContent : '';
+
+    if (submitBtn) {
+      submitBtn.textContent = "Sending...";
+      submitBtn.disabled = true;
+    }
+
+    try {
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        body: formData
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert("Success! Your message has been sent.");
+        form.reset();
+      } else {
+        alert("Error: " + (data.message || "Unable to send. Please try again."));
+      }
+
+    } catch (error) {
+      alert("Something went wrong. Please try again.");
+    } finally {
+      if (submitBtn) {
+        submitBtn.textContent = originalText || "Send";
+        submitBtn.disabled = false;
+      }
+    }
   });
 })();
