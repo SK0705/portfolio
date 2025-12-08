@@ -209,7 +209,7 @@
             Have a project, idea, or collaboration in mind?
             Reach out through the form or quick actions below.
           </p>
-          </div>
+
 
           <!-- Web3Forms form (JS handles POST via fetch) -->
           <form id="form" class="contact-form">
@@ -252,7 +252,15 @@
             </button>
           </form>
 
-          <!-- Toast used by JS -->
+          <!-- Form submission toast -->
+          <div id="formToast" class="toast form-toast" hidden>
+            <span class="form-toast-icon">
+              <i class="fas fa-paper-plane"></i>
+            </span>
+            <span class="form-toast-text">Message sent successfully.</span>
+          </div>
+
+          <!-- Toast used by JS for copy buttons -->
           <div id="copyToast" class="toast copy-toast" hidden>
             <i class="fas fa-check-circle"></i>
             <span>Copied to clipboard</span>
@@ -286,4 +294,3 @@
   <script src="script.js"></script>
 </body>
 </html>
-
